@@ -56,21 +56,25 @@
 #pragma mark - Initializers
 
 + (ADManager *)sharedManagerWithPeerID:(NSString *)peerID
+                         discoveryInfo:(NSDictionary *)discoveryInfo
+                           serviceType:(NSString *)serviceType
 {
     static ADManager *_sharedManager = nil;
     static dispatch_once_t airDropToken;
     
     dispatch_once(&airDropToken, ^{
         
-        _sharedManager = [[ADManager alloc] initWithPeerID:peerID];
-
-        
+        _sharedManager = [[ADManager alloc] initWithPeerID:peerID
+                                             discoveryInfo:discoveryInfo
+                                               serviceType:serviceType];
     });
     
     return _sharedManager;
 }
 
 - (id)initWithPeerID:(NSString *)peerID
+       discoveryInfo:(NSDictionary *)discoveryInfo
+         serviceType:(NSString *)serviceType
 {
     
     if (self = [super init])
@@ -91,17 +95,16 @@
                                   encryptionPreference:MCEncryptionRequired];
         self.session.delegate = self;
         
-        // Initialize
-        NSDictionary * discoveryInfo = @{@"AppName":@"__"}; //TODO get appname from bundle
-        
+        // Initialize session
         self.advertiser = [[MCNearbyServiceAdvertiser alloc] initWithPeer:self.myPeerId
                                                             discoveryInfo:discoveryInfo
-                                                              serviceType:@"p2ptest"];
+                                                              serviceType:serviceType];
         self.advertiser.delegate = self;
     }
     
     return self;
 }
+
 
 #pragma mark - Look for peers
 
@@ -117,6 +120,7 @@
 {
     [_browser stopBrowsingForPeers];
 }
+
 
 #pragma mark - Disclose peer
 
