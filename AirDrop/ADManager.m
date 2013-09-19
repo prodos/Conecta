@@ -7,6 +7,7 @@
 //
 
 #import "ADManager.h"
+#import "Peer.h"
 
 @interface ADManager() <MCNearbyServiceBrowserDelegate, MCNearbyServiceAdvertiserDelegate, MCSessionDelegate> {
     
@@ -18,7 +19,7 @@
 @property (strong, nonatomic) MCNearbyServiceBrowser *browser;
 @property (strong, nonatomic) MCNearbyServiceAdvertiser *advertiser;
 
-@property (strong, nonatomic) NSMutableArray *peers;
+@property (strong, nonatomic) NSMutableDictionary *peers;
 
 - (instancetype)initWithPeerID:(NSString *)peerID
                  discoveryInfo:(NSDictionary *)discoveryInfo
@@ -90,7 +91,7 @@ static const NSUInteger kDefaultTimeout = 10;
     self = [super init];
     if (self)
     {
-        self.peers = [NSMutableArray array];
+        self.peers = [NSMutableDictionary dictionary];
         self.myPeerId = [[MCPeerID alloc] initWithDisplayName:peerID];
         
         // Initialize browser
@@ -198,9 +199,12 @@ static const NSUInteger kDefaultTimeout = 10;
     
     if(peerID != nil)
     {
-        if (![self.peers containsObject:peerID]) {
-            [self.peers addObject:peerID];
-            _peersChangeBlock(_peers, nil);
+        if ([self.peers objectForKey:peerID] == nil)
+        {
+            Peer *peer = [[Peer alloc] initWithPeer:peerID andName:peerID.displayName andDiscoveryInfo:info];
+            
+            [self.peers setObject:peer forKey:peerID.displayName];
+            _peersChangeBlock([_peers allKeys], nil);
         }
     }
 }
@@ -211,9 +215,10 @@ static const NSUInteger kDefaultTimeout = 10;
     
     if(peerID != nil)
     {
-        if ([self.peers containsObject:peerID]) {
-            [self.peers removeObject:peerID];
-            _peersChangeBlock(_peers, nil);
+        if ([self.peers objectForKey:peerID])
+        {
+            [self.peers removeObjectForKey:peerID];
+            _peersChangeBlock([_peers allKeys], nil);
         }
     }
     
@@ -244,21 +249,12 @@ static const NSUInteger kDefaultTimeout = 10;
 {
     NSLog(@"MCSessionDelegate :: didChangeState :: PeerId %@ changed to state %d",peerID,state);
 
-    if (state == MCSessionStateConnected && self.session) {
-        
-        NSError *error;
-        NSLog(@"MCSessionStateConnected :: didChangeState :: PeerId %@ changed to state %d",peerID,state);
-        //[self.session sendData:[[[_txtStatus.text stringByAppendingString:@" And "] stringByAppendingString:_txtAmount.text] dataUsingEncoding:NSUTF8StringEncoding] toPeers:[NSArray arrayWithObject:peerID] withMode:MCSessionSendDataReliable error:&error];
-        
-    }else if (state == MCSessionStateNotConnected && self.session){
-        
-        
-        [self.advertiser startAdvertisingPeer];
-        
-        
-        //        [self.session sendData:[_txtStatus.text dataUsingEncoding:NSUTF8StringEncoding] toPeers:[NSArray arrayWithObject:peerID] withMode:MCSessionSendDataReliable error:&error];
-    }
+    Peer *peer = [_peers objectForKey:peerID];
     
+    if (peer)
+    {
+        peer.state = state;
+    }
 }
 
 - (BOOL)session:(MCSession *)session shouldAcceptCertificate:(SecCertificateRef)peerCert forPeer:(MCPeerID *)peerID {
