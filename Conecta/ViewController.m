@@ -12,6 +12,7 @@
 @interface ViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, strong) NSArray *peers;
+@property (nonatomic, strong) NSMutableArray *connectedPeers;
 
 @end
 
@@ -20,11 +21,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.peers = @[@"Test user 1", @"Test user 2"];
 	
     // Initialize the ADManager
-    [[ADManager sharedManager] configureWithPeerID:@"myName" discoveryInfo:@{} serviceType:@"MyAppName"];
+    [[ADManager sharedManager] configureWithPeerID:[[UIDevice currentDevice] name] discoveryInfo:@{} serviceType:@"MyAppName"];
     [[ADManager sharedManager] startAdvertisingPeer];
     [[ADManager sharedManager] starLookingForPeers:^(NSArray *peers, NSError *error)
     {
@@ -45,6 +44,7 @@
 - (void)airDropPeersHasChanged:(NSArray *)peers
 {
     self.peers = peers;
+    [self.peersTableView reloadData];
 }
 
 #pragma mark - Table view data source
@@ -74,9 +74,16 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    MCPeerID *peerToConnect = self.peers[indexPath.row];
+    if (![self.connectedPeers containsObject:peerToConnect])
+    {
+        [self.connectedPeers addObject:peerToConnect];
+        [[ADManager sharedManager] connectToPeers:self.connectedPeers onCompletion:^(NSArray *peers, NSError *error)
+        {
+            self.connectedPeers = [peers mutableCopy];
+        }];
+    }
 }
-
 
 #pragma mark - Actions
 
@@ -90,7 +97,11 @@
     [self presentViewController:picker animated:YES completion:^{}];
 }
 
-- (IBAction)sendImageTapped:(id)sender {
+- (IBAction)sendImageTapped:(id)sender
+{
+    NSData *imageData = UIImagePNGRepresentation(self.imageToSend.image);
+    NSError *error;
+    [[ADManager sharedManager] sendData:imageData toPeers:self.peers withError:&error];
 }
 
 #pragma mark - Image picker delegate
