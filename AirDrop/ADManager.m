@@ -135,4 +135,58 @@
 }
 
 
+#pragma mark - MCNearbyServiceAdvertiserDelegate
+
+- (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didNotStartAdvertisingPeer:(NSError *)error
+{
+    NSLog(@"MCNearbyServiceAdvertiserDelegate :: didNotStartAdvertisingPeer :: %@",error);
+}
+
+- (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didReceiveInvitationFromPeer:(MCPeerID *)peerID withContext:(NSData *)context invitationHandler:(void (^)(BOOL accept, MCSession *session))invitationHandler
+{
+    NSLog(@"MCNearbyServiceAdvertiserDelegate :: didReceiveInvitationFromPeer :: peerId :: %@",peerID);
+    invitationHandler(TRUE,self.session);
+}
+
+#pragma mark - MCNearbyServiceBrowserDelegate
+
+- (void)browser:(MCNearbyServiceBrowser *)browser didNotStartBrowsingForPeers:(NSError *)error
+{
+    NSLog(@"MCNearbyServiceABrowserDelegate :: didNotStartBrowsingForPeers :: error :: %@",error);
+}
+
+- (void)browser:(MCNearbyServiceBrowser *)browser foundPeer:(MCPeerID *)peerID withDiscoveryInfo:(NSDictionary *)info
+{
+    NSLog(@"MCNearbyServiceABrowserDelegate :: foundPeer :: PeerID : %@ :: DiscoveryInfo : %@",peerID,info.description);
+    
+    /*
+    if(peerID != nil)
+    {
+        for (int i=0; i<[peersFound count]; i++)
+        {
+            if ([[peersFound objectAtIndex:i] isEqualToString:peerID.displayName]) {
+                flag=TRUE;
+            }
+        }
+        if (flag==FALSE) {
+            [peersFound addObject:peerID.displayName];
+            [peersIDs addObject:peerID];
+            [_tblPeers reloadData];
+            NSLog(@"MCNearbyServiceABrowserDelegate :: foundPeer :: PeerID : %@ ",peersFound.description);
+            
+            
+        }
+    }
+     */
+}
+
+- (void)browser:(MCNearbyServiceBrowser *)browser lostPeer:(MCPeerID *)peerID {
+    
+    NSLog(@"MCNearbyServiceABrowserDelegate :: lostPeer :: PeerID : %@",peerID);
+    NSLog(@"ViewController :: launch (Starting Advertise)");
+    
+    [self.advertiser startAdvertisingPeer];
+    //[self.browser invitePeer:peerID toSession:self.session withContext:[@"Airdrop" dataUsingEncoding:NSUTF8StringEncoding] timeout:10];
+}
+
 @end
