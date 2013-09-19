@@ -11,6 +11,7 @@
 #import <MultipeerConnectivity/MultipeerConnectivity.h>
 
 typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
+typedef void (^ADPeerDidConnectedBlockType) (MCPeerID *peer, NSError *error);
 
 @protocol ADManagerDelegate;
 
@@ -26,7 +27,7 @@ typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
 @property (weak) id<ADManagerDelegate> delegate;
 
 /* Look for peers */
-- (void)starLookingForPeers:(void (^)(NSArray *peers, NSError *error))peersChage;
+- (void)starLookingForPeers:(ADPeersChangedBlockType)peersChage;
 - (void)stopLookingForPeers;
 
 /* Disclose peer */
@@ -34,7 +35,7 @@ typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
 - (void)stopAdvertisingPeer;
 
 /* Connect */
-- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(ADPeersChangedBlockType)complete;
+- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(ADPeerDidConnectedBlockType)completion;
 
 /* Send data */
 - (BOOL)sendData:(NSData *)dataToSend toPeers:(NSArray *)peersIds withError:(NSError **)error;
@@ -48,6 +49,7 @@ typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
 - (void)manager:(ADManager *)manager didReceiveInvitationFromPeer:(MCPeerID *)peer completionHandler:(void(^)(BOOL accept)) completionHandler;
 - (BOOL)manager:(ADManager *)manager didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peer;
 
+//- (void)manager:(ADManager*)manager peer:(MCPeerID*)peerID didConnect
 
 /* Error handling */
 - (BOOL)manager:(ADManager *)manager didNotStartAdvertisingPeer:(NSError *)error;

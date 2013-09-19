@@ -12,6 +12,7 @@
 @interface ADManager() <MCNearbyServiceBrowserDelegate, MCNearbyServiceAdvertiserDelegate, MCSessionDelegate> {
     
     ADPeersChangedBlockType _peersChangeBlock;
+    ADPeerDidConnectedBlockType _peerDidConnectBlock;
 }
 
 @property (strong, nonatomic) MCSession *session;
@@ -163,6 +164,16 @@ static const NSUInteger kDefaultTimeout = 10;
                         error:error];
 }
 
+- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(ADPeerDidConnectedBlockType)completion {
+    _peerDidConnectBlock = completion;
+    for (MCPeerID *peerID in peerIDs) {
+        [self.browser invitePeer:peerID
+                       toSession:self.session
+                     withContext:nil
+                         timeout:kDefaultTimeout];
+    }
+}
+
 
 #pragma mark - MCNearbyServiceAdvertiserDelegate
 
@@ -260,6 +271,13 @@ static const NSUInteger kDefaultTimeout = 10;
     if (peer)
     {
         peer.state = state;
+        if (state == MCSessionStateConnected) {
+            // Someone has connected
+            _peerDidConnectBlock(peerID, nil);
+        }
+        if (state == MCSessionStateNotConnected) {
+            // Someone has disconnected
+        }
     }
 }
 
