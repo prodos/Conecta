@@ -8,12 +8,17 @@
 
 #import "ADManager.h"
 
-@interface ADManager() <MCNearbyServiceBrowserDelegate, MCNearbyServiceAdvertiserDelegate, MCSessionDelegate>
+@interface ADManager() <MCNearbyServiceBrowserDelegate, MCNearbyServiceAdvertiserDelegate, MCSessionDelegate> {
+    
+    ADPeersChangedBlockType _peersChangeBlock;
+}
 
 @property (strong, nonatomic) MCSession *session;
 @property (strong, nonatomic) MCPeerID *myPeerId;
 @property (strong, nonatomic) MCNearbyServiceBrowser *browser;
 @property (strong, nonatomic) MCNearbyServiceAdvertiser *advertiser;
+
+@property (strong, nonatomic) NSMutableArray *peers;
 
 - (instancetype)initWithPeerID:(NSString *)peerID
                  discoveryInfo:(NSDictionary *)discoveryInfo
@@ -85,6 +90,7 @@ static const NSUInteger kDefaultTimeout = 10;
     self = [super init];
     if (self)
     {
+        self.peers = [NSMutableArray array];
         self.myPeerId = [[MCPeerID alloc] initWithDisplayName:peerID];
         
         // Initialize browser
@@ -113,13 +119,11 @@ static const NSUInteger kDefaultTimeout = 10;
 
 #pragma mark - Look for peers
 
-- (void)starLookingForPeers:(void (^)(NSArray *peers, NSError *error))peersChage
+- (void)starLookingForPeers:(void (^)(NSArray *, NSError *))peersChage
 {
+    _peersChangeBlock = peersChage;
     [_browser startBrowsingForPeers];
 }
-// 1. Browser – startBrowsingForPeers
-// 2.1 Browser Delegate – browser:foundPeer:withDiscoveryInfo:
-// 2.2 Browser Delegate – browser:lostPeer:
 
 - (void)stopLookingForPeers
 {
@@ -143,7 +147,8 @@ static const NSUInteger kDefaultTimeout = 10;
 
 - (BOOL)sendData:(NSData *)dataToSend
          toPeers:(NSArray *)peersIds
-       withError:(NSError *__autoreleasing *)error {
+       withError:(NSError *__autoreleasing *)error
+{
     return [self sendData:dataToSend
                   toPeers:peersIds
               withTimeout:kDefaultTimeout
@@ -153,7 +158,8 @@ static const NSUInteger kDefaultTimeout = 10;
 - (BOOL)sendData:(NSData *)dataToSend
          toPeers:(NSArray *)peersIds
      withTimeout:(NSUInteger)timeout
-       withError:(NSError *__autoreleasing *)error {
+       withError:(NSError *__autoreleasing *)error
+{
     return [_session sendData:dataToSend
                       toPeers:peersIds
                      withMode:MCSessionSendDataReliable
@@ -185,33 +191,28 @@ static const NSUInteger kDefaultTimeout = 10;
 {
     NSLog(@"MCNearbyServiceABrowserDelegate :: foundPeer :: PeerID : %@ :: DiscoveryInfo : %@",peerID,info.description);
     
-    /*
     if(peerID != nil)
     {
-        for (int i=0; i<[peersFound count]; i++)
-        {
-            if ([[peersFound objectAtIndex:i] isEqualToString:peerID.displayName]) {
-                flag=TRUE;
-            }
-        }
-        if (flag==FALSE) {
-            [peersFound addObject:peerID.displayName];
-            [peersIDs addObject:peerID];
-            [_tblPeers reloadData];
-            NSLog(@"MCNearbyServiceABrowserDelegate :: foundPeer :: PeerID : %@ ",peersFound.description);
-            
-            
+        if (![self.peers containsObject:peerID]) {
+            [self.peers addObject:peerID];
+            _peersChangeBlock(_peers, nil);
         }
     }
-     */
 }
 
-- (void)browser:(MCNearbyServiceBrowser *)browser lostPeer:(MCPeerID *)peerID {
-    
+- (void)browser:(MCNearbyServiceBrowser *)browser lostPeer:(MCPeerID *)peerID
+{
     NSLog(@"MCNearbyServiceABrowserDelegate :: lostPeer :: PeerID : %@",peerID);
-    NSLog(@"ViewController :: launch (Starting Advertise)");
     
-    [self.advertiser startAdvertisingPeer];
+    if(peerID != nil)
+    {
+        if ([self.peers containsObject:peerID]) {
+            [self.peers removeObject:peerID];
+            _peersChangeBlock(_peers, nil);
+        }
+    }
+    
+    //[self.advertiser startAdvertisingPeer];
     //[self.browser invitePeer:peerID toSession:self.session withContext:[@"Airdrop" dataUsingEncoding:NSUTF8StringEncoding] timeout:10];
 }
 

@@ -10,6 +10,8 @@
 
 #import <MultipeerConnectivity/MultipeerConnectivity.h>
 
+typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
+
 @protocol ADManagerDelegate;
 
 @interface ADManager : NSObject
@@ -23,7 +25,7 @@
 - (void)stopAdvertisingPeer;
 
 /* Connect */
-- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(void (^)(id responseObject, NSError *error))complete;
+- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(ADPeersChangedBlockType)complete;
 
 /* Send data */
 - (BOOL)sendData:(NSData *)dataToSend toPeers:(NSArray *)peersIds withError:(NSError **)error;
