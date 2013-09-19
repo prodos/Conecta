@@ -171,7 +171,12 @@ static const NSUInteger kDefaultTimeout = 10;
 - (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didReceiveInvitationFromPeer:(MCPeerID *)peerID withContext:(NSData *)context invitationHandler:(void (^)(BOOL accept, MCSession *session))invitationHandler
 {
     NSLog(@"MCNearbyServiceAdvertiserDelegate :: didReceiveInvitationFromPeer :: peerId :: %@",peerID);
-    invitationHandler(TRUE,self.session);
+
+    if ([self.delegate respondsToSelector:@selector(manager:didReceiveInvitationFromPeer:completionHandler:)]) {
+        [self.delegate manager:self didReceiveInvitationFromPeer:peerID completionHandler:^(BOOL accept) {
+            invitationHandler(accept,self.session);
+        }];
+    }
 }
 
 #pragma mark - MCNearbyServiceBrowserDelegate

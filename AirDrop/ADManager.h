@@ -14,6 +14,8 @@
 
 @interface ADManager : NSObject
 
+@property (weak) id<ADManagerDelegate> delegate;
+
 /* Look for peers */
 - (void)starLookingForPeers:(void (^)(NSArray *peers, NSError *error))peersChage;
 - (void)stopLookingForPeers;
@@ -33,6 +35,7 @@
 
 @protocol ADManagerDelegate <NSObject>
 
+@optional
 - (void)manager:(ADManager *)manager didReceiveInvitationFromPeer:(MCPeerID *)peer completionHandler:(void(^)(BOOL accept)) completionHandler;
 - (BOOL)manager:(ADManager *)manager didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peer;
 
