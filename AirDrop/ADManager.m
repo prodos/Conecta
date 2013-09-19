@@ -169,7 +169,7 @@ static const NSUInteger kDefaultTimeout = 10;
     for (MCPeerID *peerID in peerIDs) {
         [self.browser invitePeer:peerID
                        toSession:self.session
-                     withContext:nil
+                     withContext:[@"Airdrop" dataUsingEncoding:NSUTF8StringEncoding]
                          timeout:kDefaultTimeout];
     }
 }
