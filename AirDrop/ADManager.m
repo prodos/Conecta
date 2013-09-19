@@ -33,8 +33,6 @@ static const NSUInteger kDefaultTimeout = 10;
 
 /*
 
-
-
 - (void)stopLookingForPeers;
 // 1. Browser – stopBrowsingForPeers
 
@@ -172,6 +170,9 @@ static const NSUInteger kDefaultTimeout = 10;
 - (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didNotStartAdvertisingPeer:(NSError *)error
 {
     NSLog(@"MCNearbyServiceAdvertiserDelegate :: didNotStartAdvertisingPeer :: %@",error);
+    if ([self.delegate respondsToSelector:@selector(manager:didNotStartAdvertisingPeer:)]) {
+        [self.delegate manager:self didNotStartAdvertisingPeer:error];
+    }
 }
 
 - (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didReceiveInvitationFromPeer:(MCPeerID *)peerID withContext:(NSData *)context invitationHandler:(void (^)(BOOL accept, MCSession *session))invitationHandler
@@ -179,9 +180,12 @@ static const NSUInteger kDefaultTimeout = 10;
     NSLog(@"MCNearbyServiceAdvertiserDelegate :: didReceiveInvitationFromPeer :: peerId :: %@",peerID);
 
     if ([self.delegate respondsToSelector:@selector(manager:didReceiveInvitationFromPeer:completionHandler:)]) {
-        [self.delegate manager:self didReceiveInvitationFromPeer:peerID completionHandler:^(BOOL accept) {
-            invitationHandler(accept,self.session);
-        }];
+
+        [self.delegate manager:self
+  didReceiveInvitationFromPeer:peerID
+             completionHandler:^(BOOL accept) {
+                 invitationHandler(accept, self.session);
+             }];
     }
 }
 
@@ -190,6 +194,7 @@ static const NSUInteger kDefaultTimeout = 10;
 - (void)browser:(MCNearbyServiceBrowser *)browser didNotStartBrowsingForPeers:(NSError *)error
 {
     NSLog(@"MCNearbyServiceABrowserDelegate :: didNotStartBrowsingForPeers :: error :: %@",error);
+    
 }
 
 - (void)browser:(MCNearbyServiceBrowser *)browser foundPeer:(MCPeerID *)peerID withDiscoveryInfo:(NSDictionary *)info
@@ -227,12 +232,16 @@ static const NSUInteger kDefaultTimeout = 10;
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID
 {
     NSLog(@"MCSessionDelegate :: didReceiveData :: Received %@ from %@",[data description],peerID);
-    NSString *message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+    [self.delegate manager:self
+            didReceiveData:data fromPeer:peerID];
 }
 
 - (void)session:(MCSession *)session didReceiveResourceAtURL:(NSURL *)resourceURL fromPeer:(MCPeerID *)peerID
 {
     NSLog(@"MCSessionDelegate :: didReceiveResourceAtURL :: Received Resource %@ from %@",[resourceURL description],peerID);
+    
+    
 }
 
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID
@@ -250,8 +259,7 @@ static const NSUInteger kDefaultTimeout = 10;
         NSLog(@"MCSessionStateConnected :: didChangeState :: PeerId %@ changed to state %d",peerID,state);
         //[self.session sendData:[[[_txtStatus.text stringByAppendingString:@" And "] stringByAppendingString:_txtAmount.text] dataUsingEncoding:NSUTF8StringEncoding] toPeers:[NSArray arrayWithObject:peerID] withMode:MCSessionSendDataReliable error:&error];
         
-    }else if (state == MCSessionStateNotConnected && self.session){
-        
+    } else if (state == MCSessionStateNotConnected && self.session){
         
         [self.advertiser startAdvertisingPeer];
         
@@ -263,10 +271,16 @@ static const NSUInteger kDefaultTimeout = 10;
 
 - (BOOL)session:(MCSession *)session shouldAcceptCertificate:(SecCertificateRef)peerCert forPeer:(MCPeerID *)peerID {
     
-    NSLog(@"MCPickerViewControllerDelegate :: shouldAcceptCertificate from peerID :: %@",peerID);
-    
-    return TRUE;
-    
+    NSLog(@"MCSessionDelegate :: shouldAcceptCertificate from peerID :: %@",peerID);
+    return YES;
+}
+
+- (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
+    NSLog(@"MCSessionDelegate :: didFinishReceivingResourceWithName :: %@ from peerID :: %@ with error :: %@", resourceName, peerID, error);
+}
+
+- (void)session:(MCSession *)session didStartReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID withProgress:(NSProgress *)progress {
+    NSLog(@"MCSessionDelegate :: didStartReceivingResourceWithName :: %@ from peerID :: %@ withProgress :: %@", resourceName, peerID, progress);
 }
 
 @end
