@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		42E4AF4F17EB3A1800C5521E /* ADManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 42E4AF4E17EB3A1800C5521E /* ADManager.m */; };
 		42E4AF5317EB4A9600C5521E /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42E4AF5217EB4A9600C5521E /* MultipeerConnectivity.framework */; };
+		42E4AF5617EB63FF00C5521E /* NewImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42E4AF5517EB63FF00C5521E /* NewImageViewController.m */; };
 		CB0A37AC17EB294B00D7D1F0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB0A37AB17EB294B00D7D1F0 /* UIKit.framework */; };
 		CB0A37AE17EB294B00D7D1F0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB0A37AD17EB294B00D7D1F0 /* Foundation.framework */; };
 		CB0A37B017EB294B00D7D1F0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB0A37AF17EB294B00D7D1F0 /* CoreGraphics.framework */; };
@@ -43,6 +44,8 @@
 		42E4AF4D17EB3A1800C5521E /* ADManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADManager.h; path = AirDrop/ADManager.h; sourceTree = SOURCE_ROOT; };
 		42E4AF4E17EB3A1800C5521E /* ADManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ADManager.m; path = AirDrop/ADManager.m; sourceTree = SOURCE_ROOT; };
 		42E4AF5217EB4A9600C5521E /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
+		42E4AF5417EB63FF00C5521E /* NewImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewImageViewController.h; sourceTree = "<group>"; };
+		42E4AF5517EB63FF00C5521E /* NewImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewImageViewController.m; sourceTree = "<group>"; };
 		CB0A37A817EB294B00D7D1F0 /* Conecta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Conecta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB0A37AB17EB294B00D7D1F0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		CB0A37AD17EB294B00D7D1F0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -146,6 +149,8 @@
 				CB0A37C617EB294B00D7D1F0 /* MainStoryboard_iPad.storyboard */,
 				CB0A37C917EB294B00D7D1F0 /* ViewController.h */,
 				CB0A37CA17EB294B00D7D1F0 /* ViewController.m */,
+				42E4AF5417EB63FF00C5521E /* NewImageViewController.h */,
+				42E4AF5517EB63FF00C5521E /* NewImageViewController.m */,
 				CB0A37B217EB294B00D7D1F0 /* Supporting Files */,
 			);
 			path = Conecta;
@@ -312,6 +317,7 @@
 				D391C60317EB592500D52A75 /* Peer.m in Sources */,
 				CB0A37B817EB294B00D7D1F0 /* main.m in Sources */,
 				CB0A37BC17EB294B00D7D1F0 /* AppDelegate.m in Sources */,
+				42E4AF5617EB63FF00C5521E /* NewImageViewController.m in Sources */,
 				42E4AF4F17EB3A1800C5521E /* ADManager.m in Sources */,
 				CB0A37CB17EB294B00D7D1F0 /* ViewController.m in Sources */,
 			);

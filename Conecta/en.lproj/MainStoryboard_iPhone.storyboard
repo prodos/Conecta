@@ -97,11 +97,41 @@
                     <connections>
                         <outlet property="imageToSend" destination="dIq-f2-01P" id="mVx-xz-OfE"/>
                         <outlet property="peersTableView" destination="fix-1p-oUo" id="Ob9-Ft-NwI"/>
+                        <segue destination="fB9-F9-F3G" kind="push" identifier="showImageSegue" id="wCl-X5-DkB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-212" y="-78"/>
+        </scene>
+        <!--New Image View Controller - New image-->
+        <scene sceneID="tge-D2-e6T">
+            <objects>
+                <viewController id="fB9-F9-F3G" customClass="NewImageViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="gjl-KS-k99"/>
+                        <viewControllerLayoutGuide type="bottom" id="4XU-XL-nz0"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Kef-Ed-JU7">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rvA-VH-bpy">
+                                <rect key="frame" x="0.0" y="61" width="320" height="507"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="New image" id="eYF-oW-ReC"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <connections>
+                        <outlet property="imageReceived" destination="rvA-VH-bpy" id="czS-5Y-MFb"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ec1-Kr-SId" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="274" y="-78"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
