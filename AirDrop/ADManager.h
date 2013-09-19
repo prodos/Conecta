@@ -41,4 +41,8 @@ typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
 - (void)manager:(ADManager *)manager didReceiveInvitationFromPeer:(MCPeerID *)peer completionHandler:(void(^)(BOOL accept)) completionHandler;
 - (BOOL)manager:(ADManager *)manager didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peer;
 
+
+/* Error handling */
+- (BOOL)manager:(ADManager *)manager didNotStartAdvertisingPeer:(NSError *)error;
+
 @end
