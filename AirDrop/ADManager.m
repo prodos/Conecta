@@ -51,6 +51,14 @@ static const NSUInteger kDefaultTimeout = 10;
 
 - (BOOL)sendData:(NSData *)dataToSend toPeers:(NSArray *)peersIds withError:(NSError **)error;
 
+ 
+ // Busco peers (con un ServiceType)
+
+ // Me ofrezco como peer (con un ServiceType y un discoveryInfo)
+ 
+ // He perdido a un peer (con un PeerID)
+ // He visto a un nuevo peer (con un PeerID y con un discoveryInfo)
+ 
 @end
 
 @protocol ADManagerDelegate <NSObject>
