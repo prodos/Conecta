@@ -16,6 +16,15 @@ typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
 
 @interface ADManager : NSObject
 
+
+/* Configuration */
++ (ADManager *)sharedManager;
+
+- (void)configureWithPeerID:(NSString *)peerID
+              discoveryInfo:(NSDictionary *)discoveryInfo
+                serviceType:(NSString *)serviceType;
+
+
 /* Look for peers */
 - (void)starLookingForPeers:(void (^)(NSArray *peers, NSError *error))peersChage;
 - (void)stopLookingForPeers;

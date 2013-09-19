@@ -66,52 +66,43 @@ static const NSUInteger kDefaultTimeout = 10;
 
 #pragma mark - Initializers
 
-+ (ADManager *)sharedManagerWithPeerID:(NSString *)peerID
-                         discoveryInfo:(NSDictionary *)discoveryInfo
-                           serviceType:(NSString *)serviceType
++ (ADManager *)sharedManager
 {
     static ADManager *_sharedManager = nil;
     static dispatch_once_t airDropToken;
     
     dispatch_once(&airDropToken, ^{
-        
-        _sharedManager = [[ADManager alloc] initWithPeerID:peerID
-                                             discoveryInfo:discoveryInfo
-                                               serviceType:serviceType];
+        _sharedManager = [[ADManager alloc] init];
+        [_sharedManager configureWithPeerID:@"DefaultValue" discoveryInfo:@{@"FOO":@"--"} serviceType:@"P2PTest"];
     });
     
     return _sharedManager;
 }
 
-- (instancetype)initWithPeerID:(NSString *)peerID
-                 discoveryInfo:(NSDictionary *)discoveryInfo
-                   serviceType:(NSString *)serviceType
+- (void)configureWithPeerID:(NSString *)peerID
+              discoveryInfo:(NSDictionary *)discoveryInfo
+                serviceType:(NSString *)serviceType
 {
-    self = [super init];
-    if (self)
-    {
-        self.peers = [NSMutableArray array];
-        self.myPeerId = [[MCPeerID alloc] initWithDisplayName:peerID];
-        
-        // Initialize browser
-        self.browser = [[MCNearbyServiceBrowser alloc] initWithPeer:self.myPeerId
-                                                        serviceType:serviceType];
-        self.browser.delegate = self;
-        
-        // Initialize session
-        self.session = [[MCSession alloc] initWithPeer:self.myPeerId
-                                      securityIdentity:nil
-                                  encryptionPreference:MCEncryptionRequired];
-        self.session.delegate = self;
-        
-        // Initialize session
-        self.advertiser = [[MCNearbyServiceAdvertiser alloc] initWithPeer:self.myPeerId
-                                                            discoveryInfo:discoveryInfo
-                                                              serviceType:serviceType];
-        self.advertiser.delegate = self;
-    }
     
-    return self;
+    self.peers = [NSMutableArray array];
+    self.myPeerId = [[MCPeerID alloc] initWithDisplayName:peerID];
+    
+    // Initialize browser
+    self.browser = [[MCNearbyServiceBrowser alloc] initWithPeer:self.myPeerId
+                                                    serviceType:serviceType];
+    self.browser.delegate = self;
+    
+    // Initialize session
+    self.session = [[MCSession alloc] initWithPeer:self.myPeerId
+                                  securityIdentity:nil
+                              encryptionPreference:MCEncryptionRequired];
+    self.session.delegate = self;
+    
+    // Initialize session
+    self.advertiser = [[MCNearbyServiceAdvertiser alloc] initWithPeer:self.myPeerId
+                                                        discoveryInfo:discoveryInfo
+                                                          serviceType:serviceType];
+    self.advertiser.delegate = self;
 }
 
 

@@ -8,6 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+
+@property (weak, nonatomic) IBOutlet UITableView *peersTableView;
+
+@property (weak, nonatomic) IBOutlet UIImageView *imageToSend;
+
+- (IBAction)pickImageTapped:(id)sender;
+- (IBAction)sendImageTapped:(id)sender;
 
 @end
