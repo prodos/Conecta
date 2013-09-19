@@ -432,14 +432,14 @@
 		CB0A37E417EB294C00D7D1F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Alberto García (8Q8U4FZ36S)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Alberto García (8Q8U4FZ36S)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Conecta/Conecta-Prefix.pch";
 				INFOPLIST_FILE = "Conecta/Conecta-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "BEFFA2C1-FEB6-4650-B9C6-8EDE1D8F007C";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -447,14 +447,14 @@
 		CB0A37E517EB294C00D7D1F0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Alberto García (8Q8U4FZ36S)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Conecta/Conecta-Prefix.pch";
 				INFOPLIST_FILE = "Conecta/Conecta-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "BEFFA2C1-FEB6-4650-B9C6-8EDE1D8F007C";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
