@@ -189,4 +189,52 @@
     //[self.browser invitePeer:peerID toSession:self.session withContext:[@"Airdrop" dataUsingEncoding:NSUTF8StringEncoding] timeout:10];
 }
 
+
+#pragma mark - MCSessionDelegate
+
+- (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID
+{
+    NSLog(@"MCSessionDelegate :: didReceiveData :: Received %@ from %@",[data description],peerID);
+    NSString *message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
+- (void)session:(MCSession *)session didReceiveResourceAtURL:(NSURL *)resourceURL fromPeer:(MCPeerID *)peerID
+{
+    NSLog(@"MCSessionDelegate :: didReceiveResourceAtURL :: Received Resource %@ from %@",[resourceURL description],peerID);
+}
+
+- (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID
+{
+    NSLog(@"MCSessionDelegate :: didReceiveStream :: Received Stream %@ from %@",[stream description],peerID);
+}
+
+- (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state
+{
+    NSLog(@"MCSessionDelegate :: didChangeState :: PeerId %@ changed to state %d",peerID,state);
+
+    if (state == MCSessionStateConnected && self.session) {
+        
+        NSError *error;
+        NSLog(@"MCSessionStateConnected :: didChangeState :: PeerId %@ changed to state %d",peerID,state);
+        //[self.session sendData:[[[_txtStatus.text stringByAppendingString:@" And "] stringByAppendingString:_txtAmount.text] dataUsingEncoding:NSUTF8StringEncoding] toPeers:[NSArray arrayWithObject:peerID] withMode:MCSessionSendDataReliable error:&error];
+        
+    }else if (state == MCSessionStateNotConnected && self.session){
+        
+        
+        [self.advertiser startAdvertisingPeer];
+        
+        
+        //        [self.session sendData:[_txtStatus.text dataUsingEncoding:NSUTF8StringEncoding] toPeers:[NSArray arrayWithObject:peerID] withMode:MCSessionSendDataReliable error:&error];
+    }
+    
+}
+
+- (BOOL)session:(MCSession *)session shouldAcceptCertificate:(SecCertificateRef)peerCert forPeer:(MCPeerID *)peerID {
+    
+    NSLog(@"MCPickerViewControllerDelegate :: shouldAcceptCertificate from peerID :: %@",peerID);
+    
+    return TRUE;
+    
+}
+
 @end
