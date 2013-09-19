@@ -16,7 +16,6 @@ typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
 
 @interface ADManager : NSObject
 
-
 /* Configuration */
 + (ADManager *)sharedManager;
 
@@ -24,6 +23,7 @@ typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
               discoveryInfo:(NSDictionary *)discoveryInfo
                 serviceType:(NSString *)serviceType;
 
+@property (weak) id<ADManagerDelegate> delegate;
 
 /* Look for peers */
 - (void)starLookingForPeers:(void (^)(NSArray *peers, NSError *error))peersChage;
@@ -44,7 +44,12 @@ typedef void (^ADPeersChangedBlockType) (NSArray *peers, NSError *error);
 
 @protocol ADManagerDelegate <NSObject>
 
+@optional
 - (void)manager:(ADManager *)manager didReceiveInvitationFromPeer:(MCPeerID *)peer completionHandler:(void(^)(BOOL accept)) completionHandler;
 - (BOOL)manager:(ADManager *)manager didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peer;
+
+
+/* Error handling */
+- (BOOL)manager:(ADManager *)manager didNotStartAdvertisingPeer:(NSError *)error;
 
 @end
