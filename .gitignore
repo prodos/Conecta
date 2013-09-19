@@ -74,7 +74,7 @@ build/
 # NB: this is exclusive with OPTION 2 below
 xcuserdata
 xcuserdatad
-*.xcuserstate
+*~.xcuserstate
 
 # OPTION 2: ---------------------------------
 #     get rid of ALL personal settings, but KEEP SOME OF THEM
