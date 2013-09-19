@@ -98,10 +98,8 @@
     MCPeerID *peerToConnect = self.peers[indexPath.row];
     if (![self.connectedPeers containsObject:peerToConnect])
     {
-        [self.connectedPeers addObject:peerToConnect];
-        [[ADManager sharedManager] connectToPeers:self.connectedPeers onCompletion:^(NSArray *peers, NSError *error)
-        {
-            self.connectedPeers = [peers mutableCopy];
+        [[ADManager sharedManager] connectToPeers:self.connectedPeers onCompletion:^(MCPeerID *peer, NSError *error) {
+                [self.connectedPeers addObject:peerToConnect];
         }];
     }
 }
