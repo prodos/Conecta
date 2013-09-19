@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		42E4AF4F17EB3A1800C5521E /* ADManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 42E4AF4E17EB3A1800C5521E /* ADManager.m */; };
+		42E4AF5317EB4A9600C5521E /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42E4AF5217EB4A9600C5521E /* MultipeerConnectivity.framework */; };
 		CB0A37AC17EB294B00D7D1F0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB0A37AB17EB294B00D7D1F0 /* UIKit.framework */; };
 		CB0A37AE17EB294B00D7D1F0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB0A37AD17EB294B00D7D1F0 /* Foundation.framework */; };
 		CB0A37B017EB294B00D7D1F0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB0A37AF17EB294B00D7D1F0 /* CoreGraphics.framework */; };
@@ -40,6 +41,7 @@
 /* Begin PBXFileReference section */
 		42E4AF4D17EB3A1800C5521E /* ADManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADManager.h; path = AirDrop/ADManager.h; sourceTree = SOURCE_ROOT; };
 		42E4AF4E17EB3A1800C5521E /* ADManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ADManager.m; path = AirDrop/ADManager.m; sourceTree = SOURCE_ROOT; };
+		42E4AF5217EB4A9600C5521E /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
 		CB0A37A817EB294B00D7D1F0 /* Conecta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Conecta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB0A37AB17EB294B00D7D1F0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		CB0A37AD17EB294B00D7D1F0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -70,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42E4AF5317EB4A9600C5521E /* MultipeerConnectivity.framework in Frameworks */,
 				CB0A37AC17EB294B00D7D1F0 /* UIKit.framework in Frameworks */,
 				CB0A37AE17EB294B00D7D1F0 /* Foundation.framework in Frameworks */,
 				CB0A37B017EB294B00D7D1F0 /* CoreGraphics.framework in Frameworks */,
@@ -120,6 +123,7 @@
 		CB0A37AA17EB294B00D7D1F0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				42E4AF5217EB4A9600C5521E /* MultipeerConnectivity.framework */,
 				CB0A37AB17EB294B00D7D1F0 /* UIKit.framework */,
 				CB0A37AD17EB294B00D7D1F0 /* Foundation.framework */,
 				CB0A37AF17EB294B00D7D1F0 /* CoreGraphics.framework */,
@@ -419,6 +423,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Conecta/Conecta-Prefix.pch";
 				INFOPLIST_FILE = "Conecta/Conecta-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -433,6 +438,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Conecta/Conecta-Prefix.pch";
 				INFOPLIST_FILE = "Conecta/Conecta-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
