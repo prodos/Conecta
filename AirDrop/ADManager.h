@@ -27,6 +27,7 @@
 
 /* Send data */
 - (BOOL)sendData:(NSData *)dataToSend toPeers:(NSArray *)peersIds withError:(NSError **)error;
+- (BOOL)sendData:(NSData *)dataToSend toPeers:(NSArray *)peersIds withTimeout:(NSUInteger)timeout withError:(NSError **)error;
 
 @end
 

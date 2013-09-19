@@ -15,10 +15,16 @@
 @property (strong, nonatomic) MCNearbyServiceBrowser *browser;
 @property (strong, nonatomic) MCNearbyServiceAdvertiser *advertiser;
 
+- (instancetype)initWithPeerID:(NSString *)peerID
+                 discoveryInfo:(NSDictionary *)discoveryInfo
+                   serviceType:(NSString *)serviceType;
+
 @end
 
 
 @implementation ADManager
+
+static const NSUInteger kDefaultTimeout = 10;
 
 /*
 
@@ -72,17 +78,14 @@
     return _sharedManager;
 }
 
-- (id)initWithPeerID:(NSString *)peerID
-       discoveryInfo:(NSDictionary *)discoveryInfo
-         serviceType:(NSString *)serviceType
+- (instancetype)initWithPeerID:(NSString *)peerID
+                 discoveryInfo:(NSDictionary *)discoveryInfo
+                   serviceType:(NSString *)serviceType
 {
-    
-    if (self = [super init])
+    self = [super init];
+    if (self)
     {
         self.myPeerId = [[MCPeerID alloc] initWithDisplayName:peerID];
-        
-        
-        NSString *serviceType=@"p2ptest";
         
         // Initialize browser
         self.browser = [[MCNearbyServiceBrowser alloc] initWithPeer:self.myPeerId
@@ -105,6 +108,8 @@
     return self;
 }
 
+
+#pragma mark - Public methods
 
 #pragma mark - Look for peers
 
@@ -132,6 +137,27 @@
 - (void)stopAdvertisingPeer
 {
     [_advertiser stopAdvertisingPeer];
+}
+
+#pragma mark - Send data to peers
+
+- (BOOL)sendData:(NSData *)dataToSend
+         toPeers:(NSArray *)peersIds
+       withError:(NSError *__autoreleasing *)error {
+    return [self sendData:dataToSend
+                  toPeers:peersIds
+              withTimeout:kDefaultTimeout
+                withError:error];
+}
+
+- (BOOL)sendData:(NSData *)dataToSend
+         toPeers:(NSArray *)peersIds
+     withTimeout:(NSUInteger)timeout
+       withError:(NSError *__autoreleasing *)error {
+    return [_session sendData:dataToSend
+                      toPeers:peersIds
+                     withMode:MCSessionSendDataReliable
+                        error:error];
 }
 
 
