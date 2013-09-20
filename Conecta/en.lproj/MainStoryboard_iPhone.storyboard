@@ -98,6 +98,8 @@
                     <connections>
                         <outlet property="imageToSend" destination="dIq-f2-01P" id="mVx-xz-OfE"/>
                         <outlet property="peersTableView" destination="fix-1p-oUo" id="Ob9-Ft-NwI"/>
+                        <outlet property="pickImgBtn" destination="hrr-cP-pIb" id="QRp-ZK-upB"/>
+                        <outlet property="sendImgBtn" destination="bV0-kw-B5M" id="GEU-SF-dIm"/>
                         <segue destination="fB9-F9-F3G" kind="push" identifier="showImageSegue" id="wCl-X5-DkB"/>
                     </connections>
                 </viewController>

@@ -22,16 +22,25 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.sendImgBtn.enabled = NO;
 	
     // Initialize the ADManager
-    [[ADManager sharedManager] configureWithPeerID:[[UIDevice currentDevice] name] discoveryInfo:@{} serviceType:@"MyAppName"];
+    [ADManager sharedManager].delegate = self;
+    [[ADManager sharedManager] configureWithPeerID:[[UIDevice currentDevice] name]
+                                     discoveryInfo:@{@"aa":@"--"}
+                                       serviceType:@"MyAppName"];
     [[ADManager sharedManager] startAdvertisingPeer];
+    
+    __weak ViewController *mySelf = self;
+    
     [[ADManager sharedManager] starLookingForPeers:^(NSArray *peers, NSError *error)
     {
         if (!error) {
-            [self airDropPeersHasChanged:peers];
+            [mySelf airDropPeersHasChanged:peers];
         }
     }];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -59,7 +68,7 @@
 
 - (void)manager:(ADManager *)manager didReceiveInvitationFromPeer:(MCPeerID *)peer completionHandler:(void(^)(BOOL accept)) completionHandler
 {
-    
+    completionHandler(YES);
 }
 
 - (BOOL)manager:(ADManager *)manager didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peer
@@ -96,10 +105,14 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MCPeerID *peerToConnect = self.peers[indexPath.row];
-    if (![self.connectedPeers containsObject:peerToConnect])
+    if (peerToConnect && ![self.connectedPeers containsObject:peerToConnect])
     {
-        [[ADManager sharedManager] connectToPeers:self.connectedPeers onCompletion:^(MCPeerID *peer, NSError *error) {
-                [self.connectedPeers addObject:peerToConnect];
+        __weak ViewController *mySelf = self;
+        
+        [[ADManager sharedManager] connectToPeers:@[peerToConnect] onCompletion:^(MCPeerID *peer, NSError *error)
+        {
+            [mySelf.connectedPeers addObject:peer];
+            mySelf.sendImgBtn.enabled = self.imageToSend.image != nil;
         }];
     }
 }
@@ -118,9 +131,12 @@
 
 - (IBAction)sendImageTapped:(id)sender
 {
-    NSData *imageData = UIImagePNGRepresentation(self.imageToSend.image);
-    NSError *error;
-    [[ADManager sharedManager] sendData:imageData toPeers:self.peers withError:&error];
+    if (self.peers.count > 0 && self.imageToSend.image)
+    {
+        NSData *imageData = UIImagePNGRepresentation(self.imageToSend.image);
+        NSError *error;
+        [[ADManager sharedManager] sendData:imageData toPeers:self.peers withError:&error];
+    }
 }
 
 #pragma mark - Image picker delegate
@@ -130,6 +146,8 @@
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     [self dismissViewControllerAnimated:YES completion:^{}];
     [self.imageToSend setImage:image];
+    
+    self.sendImgBtn.enabled = self.connectedPeers.count > 0;
 }
 
 @end

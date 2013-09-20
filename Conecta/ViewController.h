@@ -14,6 +14,9 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *imageToSend;
 
+@property (weak, nonatomic) IBOutlet UIButton *pickImgBtn;
+@property (weak, nonatomic) IBOutlet UIButton *sendImgBtn;
+
 - (IBAction)pickImageTapped:(id)sender;
 - (IBAction)sendImageTapped:(id)sender;
 

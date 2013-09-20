@@ -22,10 +22,6 @@
 
 @property (strong, nonatomic) NSMutableDictionary *peers;
 
-- (instancetype)initWithPeerID:(NSString *)peerID
-                 discoveryInfo:(NSDictionary *)discoveryInfo
-                   serviceType:(NSString *)serviceType;
-
 @end
 
 
@@ -33,44 +29,6 @@
 
 static const NSUInteger kDefaultTimeout = 10;
 
-/*
-
-- (void)stopLookingForPeers;
-// 1. Browser – stopBrowsingForPeers
-
-- (void)startAdvertisingPeer;
-// 1. Advertiser -startAdvertisingPeer
-
-- (void)stopAdvertisingPeer;
-// 1. Advertiser -stopAdvertisingPeer
-
-- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(void (^)(id responseObject, NSError *error))complete;
-// 1. andar un ainvitación
-//    Browser – invitePeer:toSession:withContext:timeout:
-// 2. Recibe el cambio de estado
-//    Session delegate – session:peer:didChangeState:
-// 3. Notifica con el bloque
-
-- (BOOL)sendData:(NSData *)dataToSend toPeers:(NSArray *)peersIds withError:(NSError **)error;
-
- 
- // Busco peers (con un ServiceType)
-
- // Me ofrezco como peer (con un ServiceType y un discoveryInfo)
- 
- // He perdido a un peer (con un PeerID)
- // He visto a un nuevo peer (con un PeerID y con un discoveryInfo)
- 
-@end
-
-@protocol ADManagerDelegate <NSObject>
-
-- (void)manager:(ADManager *)manager didReceiveInvitationFromPeer:(MCPeerID *)peer completionHandler:(void(^)(BOOL accept)) completionHandler;
-- (BOOL)manager:(ADManager *)manager didReceiveData:(NSData *)data;
- 
- @end
- 
- */
 
 #pragma mark - Initializers
 
@@ -81,7 +39,7 @@ static const NSUInteger kDefaultTimeout = 10;
     
     dispatch_once(&airDropToken, ^{
         _sharedManager = [[ADManager alloc] init];
-        [_sharedManager configureWithPeerID:@"DefaultValue" discoveryInfo:@{@"FOO":@"--"} serviceType:@"P2PTest"];
+        //[_sharedManager configureWithPeerID:@"DefaultValue" discoveryInfo:@{@"FOO":@"--"} serviceType:@"P2PTest"];
     });
     
     return _sharedManager;
@@ -110,6 +68,7 @@ static const NSUInteger kDefaultTimeout = 10;
                                                         discoveryInfo:discoveryInfo
                                                           serviceType:serviceType];
     self.advertiser.delegate = self;
+    
 }
 
 
@@ -164,14 +123,19 @@ static const NSUInteger kDefaultTimeout = 10;
                         error:error];
 }
 
-- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(ADPeerDidConnectedBlockType)completion {
+- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(ADPeerDidConnectedBlockType)completion
+{
     _peerDidConnectBlock = completion;
-    for (MCPeerID *peerID in peerIDs) {
+    for (MCPeerID *peerID in peerIDs)
+    {
         [self.browser invitePeer:peerID
                        toSession:self.session
                      withContext:[@"Airdrop" dataUsingEncoding:NSUTF8StringEncoding]
                          timeout:kDefaultTimeout];
     }
+    
+    [self.advertiser startAdvertisingPeer];
+    
 }
 
 
@@ -247,15 +211,12 @@ static const NSUInteger kDefaultTimeout = 10;
 {
     NSLog(@"MCSessionDelegate :: didReceiveData :: Received %@ from %@",[data description],peerID);
 
-    [self.delegate manager:self
-            didReceiveData:data fromPeer:peerID];
+    [self.delegate manager:self didReceiveData:data fromPeer:peerID];
 }
 
 - (void)session:(MCSession *)session didReceiveResourceAtURL:(NSURL *)resourceURL fromPeer:(MCPeerID *)peerID
 {
     NSLog(@"MCSessionDelegate :: didReceiveResourceAtURL :: Received Resource %@ from %@",[resourceURL description],peerID);
-    
-    
 }
 
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID
@@ -271,11 +232,13 @@ static const NSUInteger kDefaultTimeout = 10;
     if (peer)
     {
         peer.state = state;
-        if (state == MCSessionStateConnected) {
+        if (state == MCSessionStateConnected)
+        {
             // Someone has connected
             _peerDidConnectBlock(peerID, nil);
         }
-        if (state == MCSessionStateNotConnected) {
+        else if (state == MCSessionStateNotConnected)
+        {
             // Someone has disconnected
         }
     }
