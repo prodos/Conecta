@@ -12,7 +12,7 @@
 
 @interface ViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, ADManagerDelegate>
 
-@property (nonatomic, strong) NSArray *peers;
+@property (strong) NSArray *peers;
 @property (nonatomic, strong) NSMutableArray *connectedPeers;
 
 @end
@@ -36,8 +36,11 @@
     
     [[ADManager sharedManager] starLookingForPeers:^(NSArray *peers, NSError *error)
     {
-        if (!error) {
-            [mySelf airDropPeersHasChanged:peers];
+        if (peers) {
+            [self airDropPeersHasChanged:peers];
+        }
+        else {
+            // hay error
         }
     }];
     
@@ -109,8 +112,7 @@
     {
         __weak ViewController *mySelf = self;
         
-        [[ADManager sharedManager] connectToPeers:@[peerToConnect] onCompletion:^(MCPeerID *peer, NSError *error)
-        {
+        [[ADManager sharedManager] connectToPeers:@[peerToConnect] onCompletion:^(MCPeerID *peer, NSError *error) {
             [mySelf.connectedPeers addObject:peer];
             mySelf.sendImgBtn.enabled = self.imageToSend.image != nil;
         }];

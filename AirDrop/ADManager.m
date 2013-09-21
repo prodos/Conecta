@@ -12,7 +12,7 @@
 @interface ADManager() <MCNearbyServiceBrowserDelegate, MCNearbyServiceAdvertiserDelegate, MCSessionDelegate> {
     
     ADPeersChangedBlockType _peersChangeBlock;
-    ADPeerDidConnectedBlockType _peerDidConnectBlock;
+    ADPeerDidConnectBlockType _peerDidConnectBlock;
 }
 
 @property (strong, nonatomic) MCSession *session;
@@ -123,7 +123,7 @@ static const NSUInteger kDefaultTimeout = 10;
                         error:error];
 }
 
-- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(ADPeerDidConnectedBlockType)completion
+- (void)connectToPeers:(NSArray *)peerIDs onCompletion:(ADPeerDidConnectBlockType)completion
 {
     _peerDidConnectBlock = completion;
     for (MCPeerID *peerID in peerIDs)
