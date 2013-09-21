@@ -72,9 +72,9 @@ build/
 #     - unless they are "shared")
 #
 # NB: this is exclusive with OPTION 2 below
-xcuserdata
-xcuserdatad
-*~.xcuserstate
+#xcuserdata
+#xcuserdatad
+#*~.xcuserstate
 
 # OPTION 2: ---------------------------------
 #     get rid of ALL personal settings, but KEEP SOME OF THEM
@@ -82,7 +82,7 @@ xcuserdatad
 #
 # NB: this is exclusive with OPTION 1 above
 #
-#xcuserdata/**/*
+xcuserdata/**/*
 
 #     (requires option 2 above): Personal Schemes
 #
