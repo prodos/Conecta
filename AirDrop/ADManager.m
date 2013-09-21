@@ -9,21 +9,25 @@
 #import "ADManager.h"
 #import "Peer.h"
 
+#define kDEFAULT_DISCOVERY_INFO @{@"BAR":@"FOO",@"BAR2":@"FOO"}
+#define kDEFAULT_SERVICE_TYPE @"ServiceType"
+
 @interface ADManager() <MCNearbyServiceBrowserDelegate, MCNearbyServiceAdvertiserDelegate, MCSessionDelegate> {
     
-    ADPeersChangedBlockType _peersChangeBlock;
     ADPeerDidConnectedBlockType _peerDidConnectBlock;
 }
 
 @property (strong, nonatomic) MCSession *session;
-@property (strong, nonatomic) MCPeerID *myPeerId;
 @property (strong, nonatomic) MCNearbyServiceBrowser *browser;
 @property (strong, nonatomic) MCNearbyServiceAdvertiser *advertiser;
+
+@property (strong, nonatomic) MCPeerID *myPeerId;
+@property (strong, nonatomic) NSDictionary *discoveryInfo;
+@property (strong, nonatomic) NSString *serviceType;
 
 @property (strong, nonatomic) NSMutableDictionary *peers;
 
 @end
-
 
 @implementation ADManager
 
@@ -32,53 +36,51 @@ static const NSUInteger kDefaultTimeout = 10;
 
 #pragma mark - Initializers
 
-+ (ADManager *)sharedManager
+- (instancetype)initWithPeerID:(NSString *)peerID
 {
-    static ADManager *_sharedManager = nil;
-    static dispatch_once_t airDropToken;
-    
-    dispatch_once(&airDropToken, ^{
-        _sharedManager = [[ADManager alloc] init];
-        //[_sharedManager configureWithPeerID:@"DefaultValue" discoveryInfo:@{@"FOO":@"--"} serviceType:@"P2PTest"];
-    });
-    
-    return _sharedManager;
+    return [self initWithPeerID:peerID discoveryInfo:kDEFAULT_DISCOVERY_INFO serviceType:kDEFAULT_SERVICE_TYPE];
 }
 
-- (void)configureWithPeerID:(NSString *)peerID
-              discoveryInfo:(NSDictionary *)discoveryInfo
-                serviceType:(NSString *)serviceType
-{
-    self.peers = [NSMutableDictionary dictionary];
-    self.myPeerId = [[MCPeerID alloc] initWithDisplayName:peerID];
-    
-    // Initialize browser
-    self.browser = [[MCNearbyServiceBrowser alloc] initWithPeer:self.myPeerId
-                                                    serviceType:serviceType];
-    self.browser.delegate = self;
-    
-    // Initialize session
-    self.session = [[MCSession alloc] initWithPeer:self.myPeerId
-                                  securityIdentity:nil
-                              encryptionPreference:MCEncryptionRequired];
-    self.session.delegate = self;
-    
-    // Initialize session
-    self.advertiser = [[MCNearbyServiceAdvertiser alloc] initWithPeer:self.myPeerId
-                                                        discoveryInfo:discoveryInfo
-                                                          serviceType:serviceType];
-    self.advertiser.delegate = self;
-    
-}
 
+/* Designated initializer */
+- (instancetype)initWithPeerID:(NSString *)peerID
+                 discoveryInfo:(NSDictionary *)discoveryInfo
+                   serviceType:(NSString *)serviceType
+{
+    if (self = [super init])
+    {
+        self.peers    = [NSMutableDictionary dictionary];
+        self.myPeerId = [[MCPeerID alloc] initWithDisplayName:peerID];
+        
+        self.serviceType   = serviceType;
+        self.discoveryInfo = discoveryInfo;
+        
+        // Initialize session
+        self.session = [[MCSession alloc] initWithPeer:self.myPeerId
+                                      securityIdentity:nil
+                                  encryptionPreference:MCEncryptionRequired];
+        self.session.delegate = self;
+        
+        [self startAdvertisingPeer];
+        [self starLookingForPeers];
+    }
+    
+    return self;
+}
 
 #pragma mark - Public methods
 
 #pragma mark - Look for peers
 
-- (void)starLookingForPeers:(void (^)(NSArray *, NSError *))peersChage
+- (void)starLookingForPeers
 {
-    _peersChangeBlock = peersChage;
+    if (!_browser)
+    {
+        // Initialize browser
+        self.browser = [[MCNearbyServiceBrowser alloc] initWithPeer:_myPeerId serviceType:_serviceType];
+        self.browser.delegate = self;
+    }
+    
     [_browser startBrowsingForPeers];
 }
 
@@ -92,6 +94,13 @@ static const NSUInteger kDefaultTimeout = 10;
 
 - (void)startAdvertisingPeer
 {
+    if (!_advertiser)
+    {
+        // Initialize advertiser
+        self.advertiser = [[MCNearbyServiceAdvertiser alloc] initWithPeer:self.myPeerId discoveryInfo:_discoveryInfo serviceType:_serviceType];
+        self.advertiser.delegate = self;
+    }
+    
     [_advertiser startAdvertisingPeer];
 }
 
@@ -135,7 +144,6 @@ static const NSUInteger kDefaultTimeout = 10;
     }
     
     [self.advertiser startAdvertisingPeer];
-    
 }
 
 
@@ -143,7 +151,7 @@ static const NSUInteger kDefaultTimeout = 10;
 
 - (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didNotStartAdvertisingPeer:(NSError *)error
 {
-    NSLog(@"MCNearbyServiceAdvertiserDelegate :: didNotStartAdvertisingPeer :: %@",error);
+    NSLog(@"[AD Advertiser] Can not star advertising: %@",error.localizedDescription);
     if ([self.delegate respondsToSelector:@selector(manager:didNotStartAdvertisingPeer:)]) {
         [self.delegate manager:self didNotStartAdvertisingPeer:error];
     }
@@ -151,57 +159,54 @@ static const NSUInteger kDefaultTimeout = 10;
 
 - (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didReceiveInvitationFromPeer:(MCPeerID *)peerID withContext:(NSData *)context invitationHandler:(void (^)(BOOL accept, MCSession *session))invitationHandler
 {
-    NSLog(@"MCNearbyServiceAdvertiserDelegate :: didReceiveInvitationFromPeer :: peerId :: %@",peerID);
-
-    if ([self.delegate respondsToSelector:@selector(manager:didReceiveInvitationFromPeer:completionHandler:)]) {
-
-        [self.delegate manager:self
-  didReceiveInvitationFromPeer:peerID
-             completionHandler:^(BOOL accept) {
-                 invitationHandler(accept, self.session);
-             }];
+    NSLog(@"[AD Advertiser] Invitation received from: %@",peerID.displayName);
+    if ([self.delegate respondsToSelector:@selector(manager:didReceiveInvitationFromPeer:completionHandler:)])
+    {
+        [self.delegate manager:self didReceiveInvitationFromPeer:peerID completionHandler:^(BOOL accept) {
+            double delayInSeconds = 1.0;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_queue_create("invitation_handler_queue", NULL), ^(void){
+                invitationHandler(YES, _session);
+            });
+        }];
     }
 }
+
 
 #pragma mark - MCNearbyServiceBrowserDelegate
 
 - (void)browser:(MCNearbyServiceBrowser *)browser didNotStartBrowsingForPeers:(NSError *)error
 {
-    NSLog(@"MCNearbyServiceABrowserDelegate :: didNotStartBrowsingForPeers :: error :: %@",error);
-    
+    NSLog(@"[AD Browser] Can not star browsing: %@",error.localizedDescription);
 }
 
 - (void)browser:(MCNearbyServiceBrowser *)browser foundPeer:(MCPeerID *)peerID withDiscoveryInfo:(NSDictionary *)info
 {
-    NSLog(@"MCNearbyServiceABrowserDelegate :: foundPeer :: PeerID : %@ :: DiscoveryInfo : %@",peerID,info.description);
+    NSLog(@"[AD Browser] New peer found: %@",peerID.displayName);
     
-    if(peerID != nil)
+    if(peerID && [self.peers objectForKey:peerID.displayName] == nil)
     {
-        if ([self.peers objectForKey:peerID] == nil)
-        {
-            Peer *peer = [[Peer alloc] initWithPeer:peerID andName:peerID.displayName andDiscoveryInfo:info];
-            
-            [self.peers setObject:peer forKey:peerID.displayName];
-            _peersChangeBlock([_peers allKeys], nil);
+        Peer *peer = [[Peer alloc] initWithPeer:peerID andName:peerID.displayName andDiscoveryInfo:info];
+        [self.peers setObject:peer forKey:peerID.displayName];
+        
+        if ([self.delegate respondsToSelector:@selector(manager:didDetectNewPeer:)]) {
+            [self.delegate manager:self didDetectNewPeer:peerID];
         }
     }
 }
 
 - (void)browser:(MCNearbyServiceBrowser *)browser lostPeer:(MCPeerID *)peerID
 {
-    NSLog(@"MCNearbyServiceABrowserDelegate :: lostPeer :: PeerID : %@",peerID);
+    NSLog(@"[AD Browser] Peer lost: %@",peerID);
     
-    if(peerID != nil)
+    if(peerID && [self.peers objectForKey:peerID.displayName])
     {
-        if ([self.peers objectForKey:peerID])
-        {
-            [self.peers removeObjectForKey:peerID];
-            _peersChangeBlock([_peers allKeys], nil);
+        [self.peers removeObjectForKey:peerID.displayName];
+        
+        if ([self.delegate respondsToSelector:@selector(manager:didLostAPeer:)]) {
+            [self.delegate manager:self didLostAPeer:peerID];
         }
     }
-    
-    //[self.advertiser startAdvertisingPeer];
-    //[self.browser invitePeer:peerID toSession:self.session withContext:[@"Airdrop" dataUsingEncoding:NSUTF8StringEncoding] timeout:10];
 }
 
 
@@ -226,21 +231,32 @@ static const NSUInteger kDefaultTimeout = 10;
 
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state
 {
-    NSLog(@"MCSessionDelegate :: didChangeState :: PeerId %@ changed to state %d",peerID,state);
-
-    Peer *peer = [_peers objectForKey:peerID];
-    if (peer)
+    NSLog(@"[AD Session] Peer change state: [%d]%@", state, peerID.displayName);
+    Peer *peer = [_peers objectForKey:peerID.displayName];
+    
+    switch (state)
     {
-        peer.state = state;
-        if (state == MCSessionStateConnected)
-        {
-            // Someone has connected
-            _peerDidConnectBlock(peerID, nil);
-        }
-        else if (state == MCSessionStateNotConnected)
-        {
-            // Someone has disconnected
-        }
+        case MCSessionStateNotConnected:
+            peer.state = ADStateNotConnected;
+            [self startAdvertisingPeer];
+            
+            if ([self.delegate respondsToSelector:@selector(manager:didDisconnectPeer:)]) {
+                [self.delegate manager:self didDisconnectPeer:peerID];
+            }
+            break;
+            
+        case MCSessionStateConnecting:
+            peer.state = ADStateConnecting;
+            break;
+            
+        case MCSessionStateConnected:
+            peer.state = ADStateConnected;
+            
+            if ([self.delegate respondsToSelector:@selector(manager:didConnectPeer:)]) {
+                [self.delegate manager:self didConnectPeer:peerID];
+            }
+            
+            break;
     }
 }
 

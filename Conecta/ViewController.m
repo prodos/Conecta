@@ -12,8 +12,10 @@
 
 @interface ViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, ADManagerDelegate>
 
-@property (nonatomic, strong) NSArray *peers;
+@property (nonatomic, strong) NSMutableArray *peers;
 @property (nonatomic, strong) NSMutableArray *connectedPeers;
+
+@property (nonatomic, strong) ADManager *myADManager;
 
 @end
 
@@ -23,24 +25,14 @@
 {
     [super viewDidLoad];
     
+    self.peers          = [NSMutableArray array];
+    self.connectedPeers = [NSMutableArray array];
+    
     self.sendImgBtn.enabled = NO;
 	
     // Initialize the ADManager
-    [ADManager sharedManager].delegate = self;
-    [[ADManager sharedManager] configureWithPeerID:[[UIDevice currentDevice] name]
-                                     discoveryInfo:@{@"aa":@"--"}
-                                       serviceType:@"MyAppName"];
-    [[ADManager sharedManager] startAdvertisingPeer];
-    
-    __weak ViewController *mySelf = self;
-    
-    [[ADManager sharedManager] starLookingForPeers:^(NSArray *peers, NSError *error)
-    {
-        if (!error) {
-            [mySelf airDropPeersHasChanged:peers];
-        }
-    }];
-    
+    self.myADManager = [[ADManager alloc] initWithPeerID:[[UIDevice currentDevice] name]];
+    self.myADManager.delegate = self;
 }
 
 - (void)didReceiveMemoryWarning
@@ -58,16 +50,35 @@
     }
 }
 
-#pragma mark - AirDrop stuff
+#pragma mark - ADManagerDelegate
 
-- (void)airDropPeersHasChanged:(NSArray *)peers
+- (void)manager:(ADManager *)manager didDetectNewPeer:(MCPeerID *)peer
 {
-    self.peers = peers;
+    [self.peers addObject:peer];
+    [self.peersTableView reloadData];
+}
+
+- (void)manager:(ADManager *)manager didLostAPeer:(MCPeerID *)peer
+{
+    [self.peers removeObject:peer];
+    [self.peersTableView reloadData];
+}
+
+- (void)manager:(ADManager *)manager didConnectPeer:(MCPeerID *)peerID
+{
+    [self.connectedPeers addObject:peerID];
+    [self.peersTableView reloadData];
+}
+
+- (void)manager:(ADManager *)manager didDisconnectPeer:(MCPeerID *)peerID
+{
+    [self.connectedPeers removeObject:peerID];
     [self.peersTableView reloadData];
 }
 
 - (void)manager:(ADManager *)manager didReceiveInvitationFromPeer:(MCPeerID *)peer completionHandler:(void(^)(BOOL accept)) completionHandler
 {
+    // Allow all invitations
     completionHandler(YES);
 }
 
@@ -95,7 +106,15 @@
     static NSString *CellIdentifier = @"PeerCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
-    cell.textLabel.text = self.peers[indexPath.row];
+    MCPeerID *peerID = self.peers[indexPath.row];
+    cell.textLabel.text = peerID.displayName;
+    
+    if ([self.connectedPeers containsObject:peerID]) {
+        cell.imageView.image = [UIImage imageNamed:@"online-icon"];
+    }
+    else {
+        cell.imageView.image = [UIImage imageNamed:@"offline-icon"];
+    }
     
     return cell;
 }
@@ -109,7 +128,7 @@
     {
         __weak ViewController *mySelf = self;
         
-        [[ADManager sharedManager] connectToPeers:@[peerToConnect] onCompletion:^(MCPeerID *peer, NSError *error)
+        [self.myADManager connectToPeers:@[peerToConnect] onCompletion:^(MCPeerID *peer, NSError *error)
         {
             [mySelf.connectedPeers addObject:peer];
             mySelf.sendImgBtn.enabled = self.imageToSend.image != nil;
@@ -135,7 +154,7 @@
     {
         NSData *imageData = UIImagePNGRepresentation(self.imageToSend.image);
         NSError *error;
-        [[ADManager sharedManager] sendData:imageData toPeers:self.peers withError:&error];
+        [self.myADManager sendData:imageData toPeers:self.peers withError:&error];
     }
 }
 

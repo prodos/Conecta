@@ -19,9 +19,9 @@ typedef NS_ENUM(NSInteger, ADState) {
 
 @interface Peer : NSObject
 
+@property ADState state;
 @property (nonatomic, strong) NSString *peerName;
 @property (nonatomic, strong) MCPeerID *peer;
-@property ADState state;
 @property (nonatomic, strong) NSDictionary *discoveryInfo;
 
 -(id)initWithPeer:(MCPeerID *)peer andName:(NSString *)peerName andDiscoveryInfo:(NSDictionary *)discoveryInfo;

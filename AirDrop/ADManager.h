@@ -17,17 +17,14 @@ typedef void (^ADPeerDidConnectedBlockType) (MCPeerID *peer, NSError *error);
 
 @interface ADManager : NSObject
 
-/* Configuration */
-+ (ADManager *)sharedManager;
-
-- (void)configureWithPeerID:(NSString *)peerID
-              discoveryInfo:(NSDictionary *)discoveryInfo
-                serviceType:(NSString *)serviceType;
-
 @property (weak) id<ADManagerDelegate> delegate;
 
+/* Initializers */
+- (instancetype)initWithPeerID:(NSString *)peerID;
+- (instancetype)initWithPeerID:(NSString *)peerID discoveryInfo:(NSDictionary *)discoveryInfo serviceType:(NSString *)serviceType;
+
 /* Look for peers */
-- (void)starLookingForPeers:(ADPeersChangedBlockType)peersChage;
+- (void)starLookingForPeers;
 - (void)stopLookingForPeers;
 
 /* Disclose peer */
@@ -49,7 +46,11 @@ typedef void (^ADPeerDidConnectedBlockType) (MCPeerID *peer, NSError *error);
 - (void)manager:(ADManager *)manager didReceiveInvitationFromPeer:(MCPeerID *)peer completionHandler:(void(^)(BOOL accept)) completionHandler;
 - (BOOL)manager:(ADManager *)manager didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peer;
 
-//- (void)manager:(ADManager*)manager peer:(MCPeerID*)peerID didConnect
+- (void)manager:(ADManager *)manager didDetectNewPeer:(MCPeerID *)peer;
+- (void)manager:(ADManager *)manager didLostAPeer:(MCPeerID *)peer;
+
+- (void)manager:(ADManager*)manager didConnectPeer:(MCPeerID *)peerID;
+- (void)manager:(ADManager*)manager didDisconnectPeer:(MCPeerID *)peerID;
 
 /* Error handling */
 - (BOOL)manager:(ADManager *)manager didNotStartAdvertisingPeer:(NSError *)error;

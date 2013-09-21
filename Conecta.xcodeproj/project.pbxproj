@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		426D858617EE149000F0E1A8 /* online-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 426D858417EE149000F0E1A8 /* online-icon.png */; };
+		426D858717EE149000F0E1A8 /* offline-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 426D858517EE149000F0E1A8 /* offline-icon.png */; };
 		42E4AF4F17EB3A1800C5521E /* ADManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 42E4AF4E17EB3A1800C5521E /* ADManager.m */; };
 		42E4AF5317EB4A9600C5521E /* MultipeerConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42E4AF5217EB4A9600C5521E /* MultipeerConnectivity.framework */; };
 		42E4AF5617EB63FF00C5521E /* NewImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42E4AF5517EB63FF00C5521E /* NewImageViewController.m */; };
@@ -41,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		426D858417EE149000F0E1A8 /* online-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "online-icon.png"; sourceTree = "<group>"; };
+		426D858517EE149000F0E1A8 /* offline-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "offline-icon.png"; sourceTree = "<group>"; };
 		42E4AF4D17EB3A1800C5521E /* ADManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADManager.h; path = AirDrop/ADManager.h; sourceTree = SOURCE_ROOT; };
 		42E4AF4E17EB3A1800C5521E /* ADManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ADManager.m; path = AirDrop/ADManager.m; sourceTree = SOURCE_ROOT; };
 		42E4AF5217EB4A9600C5521E /* MultipeerConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultipeerConnectivity.framework; path = System/Library/Frameworks/MultipeerConnectivity.framework; sourceTree = SDKROOT; };
@@ -98,6 +102,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		426D858317EE147800F0E1A8 /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				426D858417EE149000F0E1A8 /* online-icon.png */,
+				426D858517EE149000F0E1A8 /* offline-icon.png */,
+			);
+			path = Media;
+			sourceTree = "<group>";
+		};
 		42E4AF4C17EB39F000C5521E /* AirDrop */ = {
 			isa = PBXGroup;
 			children = (
@@ -142,6 +155,7 @@
 		CB0A37B117EB294B00D7D1F0 /* Conecta */ = {
 			isa = PBXGroup;
 			children = (
+				426D858317EE147800F0E1A8 /* Media */,
 				42E4AF4C17EB39F000C5521E /* AirDrop */,
 				CB0A37BA17EB294B00D7D1F0 /* AppDelegate.h */,
 				CB0A37BB17EB294B00D7D1F0 /* AppDelegate.m */,
@@ -247,7 +261,7 @@
 				ORGANIZATIONNAME = NSSpainTeam;
 				TargetAttributes = {
 					CB0A37A717EB294B00D7D1F0 = {
-						DevelopmentTeam = JA825X8F7Z;
+						DevelopmentTeam = SA88BR3FHS;
 					};
 				};
 			};
@@ -278,6 +292,8 @@
 				CB0A37BE17EB294B00D7D1F0 /* Default.png in Resources */,
 				CB0A37C017EB294B00D7D1F0 /* Default@2x.png in Resources */,
 				CB0A37C217EB294B00D7D1F0 /* Default-568h@2x.png in Resources */,
+				426D858717EE149000F0E1A8 /* offline-icon.png in Resources */,
+				426D858617EE149000F0E1A8 /* online-icon.png in Resources */,
 				CB0A37C517EB294B00D7D1F0 /* MainStoryboard_iPhone.storyboard in Resources */,
 				CB0A37C817EB294B00D7D1F0 /* MainStoryboard_iPad.storyboard in Resources */,
 			);
